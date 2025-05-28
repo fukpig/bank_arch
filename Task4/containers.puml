@@ -1,0 +1,66 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Система открытия депозитов - Контейнеры
+
+Person(new_client, "Клиент")
+Person(call_manager, "Сотрудник колл-центра")
+
+Person(back_office_manager, "Менеджер бэк-офиса")
+
+System_Boundary(deposit_system, "Система открытия депозитов") {
+    Container(web_app, "Веб-приложение банка", "React/Angular, HTTPS", "Публичный сайт с информацией о депозитах")
+    Container(internet_bank, "Интернет-банк", "Java/.NET, HTTPS", "Личный кабинет клиента")
+    Container(api_gateway, "API Gateway", "Spring Gateway/NGINX", "Маршрутизация запросов, аутентификация")
+    Container(abs_system, "АБС")
+    Container(call_center, "Колл-центр")
+
+
+    Container(deposit_service, "Сервис депозитов", "Java/C#, REST API", "Микросервис обработки заявок на депозиты")
+    Container(notification_service, "Сервис уведомлений", "Java/C#, REST API", "Отправка SMS и email уведомлений")
+    Container(rate_service, "Сервис ставок", "Java/C#, REST API", "Управление ставками по депозитам")
+    
+    ContainerDb(deposit_db, "База данных депозитов", "MS SQL Server", "Хранение заявок и данных о депозитах")
+    ContainerDb(rate_db, "База данных ставок", "MS SQL Server", "Хранение ставок по депозитам")
+    ContainerDb(cache, "Кэш", "Redis", "Кэширование справочных данных")
+    
+    Container(message_broker, "Брокер сообщений", "Apache Kafka", "Асинхронная обработка событий")
+}
+
+System_Ext(sms_gateway, "SMS-шлюз")
+System_Ext(call_center_system, "Система кол-центра")
+
+Rel(new_client, web_app, "Просматривает депозиты, подает заявку", "HTTPS")
+Rel(new_client, internet_bank, "Подает заявку на депозит", "HTTPS")
+
+
+Rel(call_manager, call_center, "Обрабатывает заявки", "HTTPS")
+
+
+Rel(web_app, api_gateway, "API запросы", "HTTPS/REST")
+Rel(internet_bank, api_gateway, "API запросы", "HTTPS/REST")
+
+Rel(api_gateway, deposit_service, "Маршрутизация запросов", "HTTP/REST")
+Rel(api_gateway, rate_service, "Получение ставок", "HTTP/REST")
+
+Rel(deposit_service, deposit_db, "Сохранение заявок", "SQL")
+Rel(deposit_service, message_broker, "Публикация событий", "Kafka")
+Rel(deposit_service, cache, "Кэширование данных", "Redis Protocol")
+
+Rel(rate_service, rate_db, "Управление ставками", "SQL")
+Rel(rate_service, cache, "Кэширование ставок", "Redis Protocol")
+Rel(rate_service, call_center, "Изменения ставок", "HTTP/REST")
+Rel(rate_service, call_center_system, "Изменения ставок", "FTP")
+
+
+
+Rel(notification_service, message_broker, "Подписка на события", "Kafka")
+Rel(notification_service, sms_gateway, "Отправка SMS", "HTTPS/API")
+
+Rel(deposit_service, abs_system, "Синхронизация данных", "SOAP/REST")
+Rel(deposit_service, call_center_system, "Передача заявок", "REST API")
+Rel(deposit_service, call_center, "Передача заявок", "REST API")
+
+
+Rel(back_office_manager, abs_system, "Обработка заявок", "Web UI")
+@enduml

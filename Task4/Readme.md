@@ -1,0 +1,1 @@
+![diagram](./RoadMap_bank_Standart-Roadmap.drawio.svg)

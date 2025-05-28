@@ -1,0 +1,20 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+LAYOUT_WITH_LEGEND()
+title Система открытия депозитов - Контекстная диаграмма (C1)
+Person(new_client, "Клиент", "")
+Person(call_center_manager, "Менеджер колл-центра", "Сотрудник банка, обрабатывающий заявки с сайта.")
+Person(back_office_staff, "Сотрудники бэк-офиса", "Управляют ставками, подтверждают заявки.")
+System(bank_website, "Веб-сайт банка", "Публичный сайт банка.")
+System(internet_banking, "Интернет-банк", "Банковская системе.")
+System(bank_system, "Банковская система.")
+Rel(new_client, bank_website, "Просматривает депозиты, подает заявку (ФИО, телефон)")
+Rel(bank_website, bank_system, "Передает заявку нового клиента", "")
+Rel(new_client, internet_banking, "Просматривает депозиты (в т.ч. персональные ставки), подает заявку (счет, сумма), подтверждает СМС-кодом")
+Rel(internet_banking, bank_system, "Передает заявку, запрашивает операции СМС", "")
+Rel(call_center_manager, bank_system, "Изучает заявку")
+Rel(call_center_manager, new_client, "Звонит для консультации")
+Rel(bank_system, new_client, "Отправляет СМС-уведомления")
+Rel(back_office_staff, bank_system, "Управляют ставками")
+SHOW_LEGEND()
+@enduml
