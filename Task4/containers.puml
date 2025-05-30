@@ -29,9 +29,15 @@ System_Boundary(deposit_system, "Система открытия депозит�
 
 System_Ext(sms_gateway, "SMS-шлюз")
 System_Ext(call_center_system, "Система кол-центра")
+System_Ext(call_center_ftp, "FTP сервер системы кол-центра")
+
 
 Rel(new_client, web_app, "Просматривает депозиты, подает заявку", "HTTPS")
 Rel(new_client, internet_bank, "Подает заявку на депозит", "HTTPS")
+
+
+Rel(call_center_ftp, call_center_system, "Подает заявку на депозит", "SFTP")
+
 
 
 Rel(call_manager, call_center, "Обрабатывает заявки", "HTTPS")
@@ -50,7 +56,7 @@ Rel(deposit_service, cache, "Кэширование данных", "Redis Protoc
 Rel(rate_service, rate_db, "Управление ставками", "SQL")
 Rel(rate_service, cache, "Кэширование ставок", "Redis Protocol")
 Rel(rate_service, call_center, "Изменения ставок", "HTTP/REST")
-Rel(rate_service, call_center_system, "Изменения ставок", "FTP")
+Rel(rate_service, call_center_ftp, "Изменения ставок", "FTP")
 
 
 
